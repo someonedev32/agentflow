@@ -1,0 +1,573 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AgentFlow Pro — Offline-first iOS app for real estate agents</title>
+
+  <meta name="description" content="AgentFlow Pro is an offline-first iOS app for real estate agents. Keep listings on your iPhone, search fast, update statuses, and share via WhatsApp — even without internet." />
+  <meta property="og:title" content="AgentFlow Pro" />
+  <meta property="og:description" content="Offline-first iOS app for real estate agents. Listings, smart search, status updates, WhatsApp sharing — even without internet." />
+  <meta property="og:type" content="website" />
+  <meta name="theme-color" content="#ffffff" />
+
+  <style>
+    :root{
+      --bg:#ffffff;
+      --text:#0b0f19;
+      --muted:#5b6578;
+      --line:rgba(15,23,42,.12);
+      --card: rgba(255,255,255,.78);
+      --shadow: 0 18px 60px rgba(2,6,23,.10);
+      --shadow2: 0 10px 30px rgba(2,6,23,.08);
+      --radius: 22px;
+      --max: 1080px;
+      --accent:#0a84ff; /* iOS blue */
+    }
+
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, "SF Pro Display", "SF Pro Text", Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      color:var(--text);
+      background:
+        radial-gradient(1200px 520px at 70% -10%, rgba(10,132,255,.10), transparent 60%),
+        radial-gradient(900px 520px at 20% 0%, rgba(34,197,94,.08), transparent 60%),
+        var(--bg);
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    a{ color: inherit; text-decoration:none; }
+    .wrap{ max-width:var(--max); margin:0 auto; padding: 18px 18px 88px; }
+
+    /* Top nav */
+    .nav{
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      background: rgba(255,255,255,.70);
+      border-bottom: 1px solid rgba(15,23,42,.08);
+    }
+    .navInner{
+      max-width:var(--max);
+      margin:0 auto;
+      padding: 12px 18px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width: 0;
+    }
+    .brandLogo{
+      width:34px;
+      height:34px;
+      border-radius: 10px;
+      object-fit: cover;
+      box-shadow: var(--shadow2);
+      flex: 0 0 auto;
+      background:#fff;
+    }
+    .brandText{
+      display:flex;
+      flex-direction:column;
+      line-height:1.1;
+      min-width: 0;
+    }
+    .brandText b{
+      font-size: 14px;
+      letter-spacing: .2px;
+      white-space: nowrap;
+      overflow:hidden;
+      text-overflow: ellipsis;
+    }
+    .brandText span{
+      font-size: 12px;
+      color: var(--muted);
+      white-space: nowrap;
+      overflow:hidden;
+      text-overflow: ellipsis;
+    }
+    .navLinks{
+      display:flex;
+      align-items:center;
+      gap: 14px;
+      flex: 0 0 auto;
+    }
+    .link{
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .link:hover{ color: var(--text); }
+
+    /* Buttons */
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      padding: 11px 14px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 13px;
+      border: 1px solid transparent;
+      cursor:pointer;
+      user-select:none;
+      transition: transform .08s ease, filter .18s ease, background .18s ease, border-color .18s ease;
+      white-space:nowrap;
+    }
+    .btn:active{ transform: translateY(1px) scale(.99); }
+    .btnPrimary{
+      color: #fff;
+      background: var(--accent);
+      box-shadow: 0 10px 22px rgba(10,132,255,.22);
+    }
+    .btnPrimary:hover{ filter: brightness(0.98); }
+    .btnGhost{
+      background: rgba(15,23,42,.04);
+      border-color: rgba(15,23,42,.08);
+      color: var(--text);
+    }
+    .btnGhost:hover{ background: rgba(15,23,42,.06); }
+
+    /* Hero */
+    .hero{
+      padding-top: 46px;
+      padding-bottom: 26px;
+    }
+    .heroGrid{
+      display:grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 22px;
+      align-items:center;
+    }
+    @media (max-width: 920px){
+      .heroGrid{ grid-template-columns: 1fr; }
+    }
+
+    h1{
+      margin:0 0 10px;
+      font-size: clamp(30px, 4.2vw, 52px);
+      line-height: 1.08;
+      letter-spacing: -0.8px;
+    }
+    .sub{
+      margin: 0 0 16px;
+      color: var(--muted);
+      font-size: 16px;
+      max-width: 62ch;
+    }
+
+    .metaRow{
+      display:flex;
+      flex-wrap:wrap;
+      gap: 10px;
+      margin: 16px 0 22px;
+    }
+    .chip{
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(15,23,42,.10);
+      background: rgba(255,255,255,.72);
+      box-shadow: 0 8px 18px rgba(2,6,23,.06);
+      font-size: 13px;
+      color: #111827;
+    }
+
+    /* Card sections */
+    .section{
+      margin-top: 34px;
+      padding-top: 6px;
+    }
+    .sectionTitle{
+      font-size: 18px;
+      letter-spacing: -0.2px;
+      margin: 0 0 12px;
+    }
+
+    .cards{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+    @media (max-width: 980px){
+      .cards{ grid-template-columns: 1fr; }
+    }
+    .card{
+      border-radius: var(--radius);
+      border: 1px solid rgba(15,23,42,.10);
+      background: rgba(255,255,255,.72);
+      box-shadow: var(--shadow2);
+      padding: 16px;
+    }
+    .card h3{
+      margin: 0 0 6px;
+      font-size: 15px;
+      letter-spacing: -0.2px;
+    }
+    .card p{
+      margin: 0;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    /* iPhone mock */
+    .phoneWrap{
+      display:flex;
+      justify-content:center;
+      align-items:center;
+    }
+    .phone{
+      width: min(420px, 100%);
+      aspect-ratio: 9 / 19.5;
+      border-radius: 44px;
+      border: 1px solid rgba(15,23,42,.12);
+      box-shadow: var(--shadow);
+      background: #0b0f19;
+      position: relative;
+      overflow:hidden;
+    }
+    .phone::before{
+      content:"";
+      position:absolute;
+      inset: 10px;
+      border-radius: 36px;
+      background:
+        radial-gradient(700px 300px at 70% 10%, rgba(10,132,255,.35), transparent 55%),
+        radial-gradient(600px 280px at 20% 35%, rgba(34,197,94,.22), transparent 55%),
+        linear-gradient(180deg, #0b1220, #0b0f19);
+    }
+    .notch{
+      position:absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 42%;
+      height: 26px;
+      border-radius: 0 0 18px 18px;
+      background: rgba(0,0,0,.55);
+      border: 1px solid rgba(255,255,255,.08);
+      z-index: 2;
+    }
+    .screen{
+      position:absolute;
+      inset: 22px;
+      border-radius: 34px;
+      overflow:hidden;
+      z-index: 1;
+      display:flex;
+      flex-direction:column;
+      justify-content:flex-end;
+      padding: 16px;
+      color: #eef2ff;
+    }
+    .screenTop{
+      position:absolute;
+      top: 18px;
+      left: 18px;
+      right: 18px;
+      display:flex;
+      justify-content:space-between;
+      font-size: 12px;
+      opacity:.85;
+    }
+    .screenCard{
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.10);
+      border-radius: 18px;
+      padding: 14px;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      box-shadow: 0 12px 34px rgba(0,0,0,.25);
+    }
+    .screenCard b{ display:block; margin-bottom:6px; }
+    .screenCard ul{
+      margin:0;
+      padding-left: 18px;
+      color: rgba(238,242,255,.85);
+      font-size: 12px;
+    }
+    .screenCard li{ margin: 6px 0; }
+
+    /* Languages row */
+    .langs{
+      display:flex;
+      flex-wrap:wrap;
+      gap: 8px;
+    }
+    .lang{
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(15,23,42,.10);
+      background: rgba(255,255,255,.72);
+      box-shadow: 0 8px 18px rgba(2,6,23,.06);
+      font-size: 13px;
+      color: #111827;
+    }
+
+    /* FAQ */
+    details{
+      border-radius: 16px;
+      border: 1px solid rgba(15,23,42,.10);
+      background: rgba(255,255,255,.72);
+      box-shadow: 0 10px 26px rgba(2,6,23,.06);
+      padding: 12px 14px;
+    }
+    details + details{ margin-top: 10px; }
+    summary{
+      cursor:pointer;
+      font-weight: 700;
+      font-size: 14px;
+      list-style:none;
+      outline:none;
+    }
+    summary::-webkit-details-marker{ display:none; }
+    details p{
+      margin: 10px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    /* Footer */
+    footer{
+      margin-top: 40px;
+      padding-top: 18px;
+      border-top: 1px solid rgba(15,23,42,.08);
+      color: var(--muted);
+      font-size: 12px;
+      display:flex;
+      flex-wrap:wrap;
+      gap: 10px;
+      justify-content:space-between;
+      align-items:center;
+    }
+
+    /* Small toast */
+    .toast{
+      position: fixed;
+      left: 50%;
+      bottom: 16px;
+      transform: translateX(-50%);
+      background: rgba(15,23,42,.92);
+      color: #fff;
+      padding: 10px 12px;
+      border-radius: 999px;
+      font-size: 13px;
+      box-shadow: 0 16px 45px rgba(0,0,0,.25);
+      opacity: 0;
+      pointer-events:none;
+      transition: opacity .2s ease, transform .2s ease;
+      z-index: 50;
+    }
+    .toast.show{
+      opacity: 1;
+      transform: translateX(-50%) translateY(-6px);
+    }
+
+    /* Apple icon */
+    .appleIcon{ width:18px; height:18px; display:inline-block; }
+
+    /* Compact on mobile */
+    @media (max-width: 520px){
+      .navLinks .link{ display:none; }
+      .hero{ padding-top: 34px; }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Sticky Apple-like top bar -->
+  <div class="nav">
+    <div class="navInner">
+      <a class="brand" href="#" aria-label="AgentFlow Pro Home">
+        <!-- Put your provided logo image as logo.png (same folder) -->
+        <img class="brandLogo" src="logo.png" alt="AgentFlow Pro logo" />
+        <div class="brandText">
+          <b>AgentFlow Pro</b>
+          <span>Offline-first iOS app</span>
+        </div>
+      </a>
+
+      <div class="navLinks">
+        <a class="link" href="#features">Features</a>
+        <a class="link" href="#languages">Languages</a>
+        <a class="link" href="#faq">FAQ</a>
+
+        <a class="btn btnPrimary" id="installTop"
+           href="https://apps.apple.com/app/agentflow-pro/id6758519220"
+           target="_blank" rel="noopener">
+          <svg class="appleIcon" viewBox="0 0 24 24" aria-hidden="true">
+            <path fill="currentColor" d="M16.365 1.43c0 1.14-.43 2.23-1.19 3.03-.82.86-2.16 1.52-3.3 1.43-.14-1.11.39-2.28 1.17-3.11.84-.9 2.27-1.55 3.32-1.35ZM20.73 17.2c-.58 1.33-.86 1.93-1.61 3.12-1.05 1.66-2.52 3.73-4.35 3.75-1.63.02-2.05-1.07-4.26-1.06-2.21.01-2.67 1.08-4.3 1.06-1.82-.02-3.21-1.89-4.26-3.55-2.98-4.69-3.29-10.19-1.45-13.02 1.3-2.02 3.37-3.2 5.32-3.2 1.98 0 3.22 1.09 4.86 1.09 1.59 0 2.56-1.1 4.84-1.1 1.73 0 3.56.95 4.85 2.6-4.27 2.34-3.58 8.44 1.36 10.31Z"/>
+          </svg>
+          Install
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <!-- Hero -->
+    <section class="hero">
+      <div class="heroGrid">
+        <div>
+          <h1>Keep your listings. Search fast. Share instantly. Even offline.</h1>
+          <p class="sub">
+            AgentFlow Pro is an offline-first iOS app for real estate agents who need speed, control,
+            and reliability — <b>even without an internet connection</b>.
+          </p>
+
+          <div class="metaRow">
+            <span class="chip">✔ Fully functional offline</span>
+            <span class="chip">✔ Smart filters</span>
+            <span class="chip">✔ One-tap status updates</span>
+            <span class="chip">✔ WhatsApp sharing</span>
+            <span class="chip">🔹 7-day free trial</span>
+          </div>
+
+          <div style="display:flex; flex-wrap:wrap; gap:10px; align-items:center;">
+            <a class="btn btnPrimary" id="installMain"
+               href="https://apps.apple.com/app/agentflow-pro/id6758519220"
+               target="_blank" rel="noopener">
+              <svg class="appleIcon" viewBox="0 0 24 24" aria-hidden="true">
+                <path fill="currentColor" d="M16.365 1.43c0 1.14-.43 2.23-1.19 3.03-.82.86-2.16 1.52-3.3 1.43-.14-1.11.39-2.28 1.17-3.11.84-.9 2.27-1.55 3.32-1.35ZM20.73 17.2c-.58 1.33-.86 1.93-1.61 3.12-1.05 1.66-2.52 3.73-4.35 3.75-1.63.02-2.05-1.07-4.26-1.06-2.21.01-2.67 1.08-4.3 1.06-1.82-.02-3.21-1.89-4.26-3.55-2.98-4.69-3.29-10.19-1.45-13.02 1.3-2.02 3.37-3.2 5.32-3.2 1.98 0 3.22 1.09 4.86 1.09 1.59 0 2.56-1.1 4.84-1.1 1.73 0 3.56.95 4.85 2.6-4.27 2.34-3.58 8.44 1.36 10.31Z"/>
+              </svg>
+              Install on the App Store
+            </a>
+
+            <button class="btn btnGhost" id="copyBtn" type="button">Copy App Store link</button>
+          </div>
+
+          <p style="margin:12px 0 0; color:var(--muted); font-size:13px;">
+            Share full property details via WhatsApp (photos, price, location) — anytime, anywhere.
+          </p>
+        </div>
+
+        <!-- iPhone mockup (no screenshots needed) -->
+        <div class="phoneWrap" aria-hidden="true">
+          <div class="phone">
+            <div class="notch"></div>
+            <div class="screen">
+              <div class="screenTop">
+                <span>AgentFlow Pro</span>
+                <span>Offline</span>
+              </div>
+              <div class="screenCard">
+                <b>Today</b>
+                <ul>
+                  <li>Search listings with filters</li>
+                  <li>Update status in one tap</li>
+                  <li>Send on WhatsApp (photos + price + location)</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features -->
+    <section class="section" id="features">
+      <h2 class="sectionTitle">Features</h2>
+      <div class="cards">
+        <div class="card">
+          <h3>Offline-first</h3>
+          <p>All listings stay on your iPhone. Work seamlessly without internet.</p>
+        </div>
+        <div class="card">
+          <h3>Instant search</h3>
+          <p>Find properties quickly with smart filters and fast lookup.</p>
+        </div>
+        <div class="card">
+          <h3>WhatsApp sharing</h3>
+          <p>Share complete details (photos, price, location) in seconds.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Languages -->
+    <section class="section" id="languages">
+      <h2 class="sectionTitle">Multi-Language Support</h2>
+      <div class="langs">
+        <span class="lang">🇬🇧 English</span>
+        <span class="lang">🇩🇪 German</span>
+        <span class="lang">🇦🇱 Albanian</span>
+        <span class="lang">🇫🇷 French</span>
+        <span class="lang">🇪🇸 Spanish</span>
+        <span class="lang">🇮🇹 Italian</span>
+        <span class="lang">🇸🇦 Arabic</span>
+        <span class="lang">🇹🇷 Turkish</span>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="section" id="faq">
+      <h2 class="sectionTitle">FAQ</h2>
+
+      <details>
+        <summary>Does it work without internet?</summary>
+        <p>Yes. AgentFlow Pro is offline-first — you can browse, search, update statuses, and share details even when you’re offline.</p>
+      </details>
+
+      <details>
+        <summary>What can I share via WhatsApp?</summary>
+        <p>You can share full property details including photos, price, and location. Perfect for quick client follow-ups.</p>
+      </details>
+
+      <details>
+        <summary>Is there a free trial?</summary>
+        <p>Yes — you get a 7-day free trial to test the app before committing.</p>
+      </details>
+    </section>
+
+    <footer>
+      <span>© <span id="year"></span> AgentFlow Pro</span>
+      <span>
+        <a href="https://apps.apple.com/app/agentflow-pro/id6758519220" target="_blank" rel="noopener" style="text-decoration:underline; text-underline-offset:3px;">
+          Open on App Store
+        </a>
+      </span>
+    </footer>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const APP_STORE_URL = "https://apps.apple.com/app/agentflow-pro/id6758519220";
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    function toast(msg){
+      const t = document.getElementById("toast");
+      t.textContent = msg;
+      t.classList.add("show");
+      clearTimeout(window.__toastTimer);
+      window.__toastTimer = setTimeout(()=>t.classList.remove("show"), 2200);
+    }
+
+    document.getElementById("copyBtn").addEventListener("click", async () => {
+      try{
+        await navigator.clipboard.writeText(APP_STORE_URL);
+        toast("Link copied ✅");
+      }catch(e){
+        window.prompt("Copy this link:", APP_STORE_URL);
+        toast("Copy manually (clipboard blocked).");
+      }
+    });
+
+    // Optional: simple click signal for future analytics
+    ["installTop","installMain"].forEach(id=>{
+      document.getElementById(id).addEventListener("click", ()=> {
+        // Hook for analytics if you add later
+        // console.log("Install clicked");
+      });
+    });
+  </script>
+</body>
+</html>
